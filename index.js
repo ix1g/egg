@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { Client, GatewayIntentBits, EmbedBuilder, PermissionsBitField } = require('discord.js');
 
-
+// author sayrz.
 const TOKEN = 'your bot token';
 
 const SERVER_IP = 'server ip';
