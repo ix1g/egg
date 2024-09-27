@@ -1,12 +1,18 @@
+/* 
+███    ███  █████  ██████  ███████     ██████  ██    ██     ███████  █████  ██    ██ ██████  ███████ 
+████  ████ ██   ██ ██   ██ ██          ██   ██  ██  ██      ██      ██   ██  ██  ██  ██   ██    ███  
+██ ████ ██ ███████ ██   ██ █████       ██████    ████       ███████ ███████   ████   ██████    ███   
+██  ██  ██ ██   ██ ██   ██ ██          ██   ██    ██             ██ ██   ██    ██    ██   ██  ███    
+██      ██ ██   ██ ██████  ███████     ██████     ██        ███████ ██   ██    ██    ██   ██ ███████ 
+
+Original Repo: https://github.com/ix1g/egg
+License: MIT
+*/
+
 const axios = require('axios');
 const { Client, GatewayIntentBits, EmbedBuilder, PermissionsBitField } = require('discord.js');
-
-// author sayrz.
-const TOKEN = 'your bot token';
-
-const SERVER_IP = 'server ip';
-
-const CHANNEL_ID = 'channel id';
+const dotenv = require('dotenv');
+dotenv.config();
 
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
@@ -14,19 +20,17 @@ const client = new Client({
 
 let statusMessageId = null; 
 
-
 async function getMinecraftServerStatus() {
     try {
-        const response = await axios.get(`https://api.mcsrvstat.us/3/${SERVER_IP}`);
+        const response = await axios.get(`https://api.mcsrvstat.us/3/${process.env.SERVER_IP}`);
         const { online, players, motd, version } = response.data;
 
         let playerList = players.list ? players.list.join(', ') : 'No players online';
-
         
         const nextUpdateTime = Math.floor((Date.now() + 5 * 60 * 1000) / 1000); 
 
         const statusEmbed = new EmbedBuilder()
-            .setTitle(`${SERVER_IP} Server Status`)
+            .setTitle(`${process.env.SERVER_IP} Server Status`)
             .setColor(online ? 0x00FF00 : 0xFF0000) 
             .addFields(
                 { name: 'Server Online:', value: online ? 'Yes' : 'No', inline: true },
@@ -49,17 +53,20 @@ async function getMinecraftServerStatus() {
     }
 }
 
-
-async function sendOrUpdateStatusMessage(channel) {
+async function sendOrUpdateStatusMessage(channelId) {
     try {
         const statusEmbed = await getMinecraftServerStatus();
+        const channel = client.channels.cache.get(channelId); 
+        
+        if (!channel) {
+            console.error('Error: Channel not found');
+            return;
+        }
 
         if (!statusMessageId) {
-            
             const statusMessage = await channel.send({ embeds: [statusEmbed] });
             statusMessageId = statusMessage.id; 
         } else {
-          
             const statusMessage = await channel.messages.fetch(statusMessageId);
             await statusMessage.edit({ embeds: [statusEmbed] });
         }
@@ -68,17 +75,12 @@ async function sendOrUpdateStatusMessage(channel) {
     }
 }
 
-
-async function startUpdatingStatus(channel) {
-    
-    await sendOrUpdateStatusMessage(channel);
-
-   
+async function startUpdatingStatus(channelId) {
+    await sendOrUpdateStatusMessage(channelId);
     setInterval(async () => {
-        await sendOrUpdateStatusMessage(channel);
+        await sendOrUpdateStatusMessage(channelId);
     }, 300000);
 }
-
 
 client.on('messageCreate', async (message) => {
     if (message.content === '!start') {
@@ -86,13 +88,13 @@ client.on('messageCreate', async (message) => {
             return message.reply('You need Administrator permissions to use this command.');
         }
 
-        const channel = client.channels.cache.get(CHANNEL_ID);
-        if (!channel) {
+        const channel = client.channels.cache.get(process.env.CHANNEL_ID);
+        if (!process.env.CHANNEL_ID) {
             return message.reply('The specified channel was not found.');
         }
 
         message.reply('Starting the Minecraft server status updates...');
-        await startUpdatingStatus(channel);
+        await startUpdatingStatus(process.env.CHANNEL_ID);
     }
 });
 
@@ -100,4 +102,4 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.login(TOKEN);
+client.login(process.env.TOKEN);
