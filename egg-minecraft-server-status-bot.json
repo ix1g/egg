@@ -1,0 +1,31 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2024-09-26T20:52:30+01:00",
+    "name": "Minecraft Server Status Bot - Hypernet",
+    "author": "lezethoyt@gmail.com",
+    "description": "Minecraft Server Discord Bot status made by the Hypernet team.",
+    "features": null,
+    "docker_images": {
+        "Nodejs 19": "ghcr.io\/hypernet-org-uk\/custom-yolks:nodejs_19"
+    },
+    "file_denylist": [],
+    "startup": "node index.js",
+    "config": {
+        "files": "{}",
+        "startup": "{\r\n    \"done\": [\r\n        \"This is hosted on Hypernet! https:\/\/discord.gg\/hypernet\",\r\n        \"We hope you enjoy your experience!\"\r\n    ]\r\n}",
+        "logs": "{}",
+        "stop": "^^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!\/bin\/bash\r\n# MC Status Bot Installation Script\r\n#\r\n# Server Files: \/mnt\/server\r\napt update\r\napt install -y git curl jq file unzip make gcc g++ python python-dev libtool\r\n\r\necho -e \"updating npm. please wait...\"\r\nnpm install npm@latest -g\r\n\r\nmkdir -p \/mnt\/server\r\ncd \/mnt\/server\r\n\r\ngit clone https:\/\/github.com\/ix1g\/egg.git .\/\r\n\r\n\/usr\/local\/bin\/npm install --production\r\n\r\nexit 0",
+            "container": "node:19-bullseye-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": []
+}
