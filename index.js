@@ -7,7 +7,7 @@
 
 Original Repo: https://github.com/ix1g/egg
 License: MIT
-*/
+*/ 
 
 const axios = require('axios');
 const { Client, GatewayIntentBits, EmbedBuilder, PermissionsBitField } = require('discord.js');
@@ -22,7 +22,7 @@ let statusMessageId = null;
 
 async function getMinecraftServerStatus() {
     try {
-        const response = await axios.get(`https://api.mcsrvstat.us/3/${process.env.SERVER_IP}`);
+        const response = await axios.get(`https://api.mcsrvstat.us/2/${process.env.SERVER_IP}`);
         const { online, players, motd, version } = response.data;
 
         let playerList = players.list ? players.list.join(', ') : 'No players online';
