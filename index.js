@@ -85,7 +85,7 @@ async function startUpdatingStatus(channelId) {
 client.on('messageCreate', async (message) => {
     if (message.content === '!start') {
         if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-            return message.reply('You need Administrator permissions to use this command.');
+            return message.reply('You need Administrator permissions to use this command. | ليست لديك الصلاحية لأستعمال هذا الأمر.');
         }
 
         const channel = client.channels.cache.get(process.env.CHANNEL_ID);
